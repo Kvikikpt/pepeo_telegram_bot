@@ -69,14 +69,28 @@ def lalala(message):
         	if rs.status_code == 200:
         		root = BeautifulSoup(rs.content, 'html.parser')
         		article = root.select_one('article')
+        		if article is None:
+        			sti = open('stickers/nrdy.webp', 'rb')
+        			bot.send_sticker(message.chat.id, sti)
+        			bot.send_message(message.chat.id, 'An error occured. Oink. Maybe you wrote a wrong link? Oink.')
+        			return
         		sti = open('stickers/rdy.webp', 'rb')
-        		bot.send_message(message.chat.id, f'{article.text}')
+        		if len(article.text) > 4095:
+        			i = 0
+        			while len(article.text) > i:
+        				i += 4095
+        				a = i - 4095
+        				string = article.text[a:i + 1]
+        				bot.send_message(message.chat.id, string)
+        		else:
+        			bot.send_message(message.chat.id, f'{article.text}')
         		bot.send_sticker(message.chat.id, sti)
         		bot.send_message(message.chat.id, 'Oink!')
         	else:
         		sti = open('stickers/nrdy.webp', 'rb')
         		bot.send_sticker(message.chat.id, sti)
         		bot.send_message(message.chat.id, 'An error occured. Oink. Maybe you wrote a wrong link? Oink.')
+        		return
         else:
             sti = open('stickers/wha.webp', 'rb')
             bot.send_sticker(message.chat.id, sti)
